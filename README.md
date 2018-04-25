@@ -13,7 +13,11 @@ The respective websites provide instructions on installation of the above prereq
 ```
 make config shared=1
 ```
-and that the METIS for Python wrapper requires setting the environment variable *METIS_DLL* to point to libmetis.so (or whatever the shared object filename is).
+and that the METIS for Python wrapper requires setting the environment variable **METIS_DLL** to point to libmetis.so (or whatever the shared object filename is). With bash this is achieved by issuing the command:
+```
+export METIS_DLL=/path/to/libmetis.so
+```
+
 
 # **Installation**
 
