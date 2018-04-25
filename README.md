@@ -9,7 +9,11 @@ tensorCSP is a small collection of Python functions for casting constraint satis
 * [METIS](http://glaros.dtc.umn.edu/gkhome/metis/metis/overview)
 * [METIS for Python](https://metis.readthedocs.io)
 
-The respective websites provide instructions on installation of the above prerequisites.
+The respective websites provide instructions on installation of the above prerequisites. Note that METIS needs to be configured and compiled as a shared library with:
+```
+make config shared=1
+```
+and that the METIS for Python wrapper requires setting the environment variable *METIS_DLL* to point to libmetis.so (or whatever the shared object filename is).
 
 # **Installation**
 
