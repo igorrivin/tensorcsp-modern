@@ -17,7 +17,7 @@ and that the METIS for Python wrapper requires setting the environment variable 
 ```
 export METIS_DLL=/path/to/libmetis.so
 ```
-where */path/to/* should be replaced with the actual location of the library (presumably */usr/local/lib/* for a global installation on a Linux system).
+where `/path/to/` should be replaced with the actual location of the library (presumably `/usr/local/lib/` for a global installation on a Linux system).
 
 # **Installation**
 
