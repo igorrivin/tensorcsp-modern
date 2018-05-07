@@ -2,6 +2,10 @@
 
 tensorCSP is a small collection of Python functions for casting constraint satisfaction problems into tensor networks and basic implementations of algorithms for full contraction of the resulting tensor networks. Concepts from algorithmic graph theory and network theory, namely graph partitioning and community structure detection, are used to determine advantageous contraction sequences for arbitrary graphs of tensors.
 
+The methods implemented in tensorCSP are described in:
+
+* S. Kourtis, C. Chamon, E. R. Mucciolo, and A. E. Ruckenstein, *Fast counting with tensor networks*, [arXiv:1805.00475](https://arxiv.org/abs/1805.00475)
+
 # **Prerequisites**
 
 * [numpy](http://www.numpy.org/)
