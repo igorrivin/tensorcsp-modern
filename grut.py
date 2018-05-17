@@ -67,9 +67,9 @@ def bipartition_width(membership,g):
     return len(get_bipartition_eids(membership,g))
 
 def metis_bipartition(g,n=2):
-    """ Perform METIS bipartition. """
+    """ Perform METIS bipartition. Do n cuts and choose the best. """
     al = g.get_adjlist()
-    _,m = part_graph(al,n,recursive=False,contig=True,minconn=True)
+    _,m = part_graph(al,ncuts=n,recursive=False,contig=True,minconn=True)
     return array(m)
 
 def metis_kway(g,k):
@@ -78,13 +78,15 @@ def metis_kway(g,k):
     _,m = part_graph(al,k,recursive=False,contig=True,minconn=True)
     return m
 
+# Fiedler vector does not guarantee contiguous partitions.
+# This function is here for testing purposes only.
 def fiedler_bipartition(g):
     """ Perform bipartition based on the Fiedler vector. """
     l = array(g.laplacian())
     _,v = eigh(l)
     return v[:,1]<=0
 
-def recursive_bipartition(g,fbipart=fiedler_bipartition):
+def recursive_bipartition(g,fbipart=metis_bipartition):
     """ Build separator hierarchy using recursive bipartition.
         Returns a dendrogram merge sequence. """
     nv = g.vcount()
@@ -100,12 +102,13 @@ def recursive_bipartition(g,fbipart=fiedler_bipartition):
             fb = fbipart(s)
             s1 = nonzero(fb==0)[0]
             s2 = nonzero(fb>0)[0]
-            # METIS refuses to partition very small graphs
-            # so use Fiedler bipartition instead
-            if ( len(s1)*len(s2) == 0 ):
-                fb = fiedler_bipartition(s)
-                s1 = nonzero(fb==0)[0]
-                s2 = nonzero(fb>0)[0]
+            # METIS often refuses to partition very small graphs
+            # so "peel off" least connected vertex instead
+            while ( len(s1)*len(s2) == 0 ):
+                fb = zeros(s.vcount(),int)
+                fb[array(s.degree()).argmin()] = 1
+                s1 = nonzero(array(fb)==0)[0]
+                s2 = nonzero(array(fb)>0)[0]
             g1 = s.subgraph(s1)
             g2 = s.subgraph(s2)
             st.append(g1)
