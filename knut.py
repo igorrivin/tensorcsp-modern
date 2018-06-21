@@ -1,14 +1,14 @@
 #################################################################
 #                                                               #
-#   KNOT UTILITIES                                             #
+#   KNOT UTILITIES                                              #
 #   ==============                                              #
 #   ( knut.py )                                                 #
 #   first instance: 20180621                                    #
 #   written by Stefanos Kourtis ( kourtis@bu.edu )              #
 #                                                               #
-#   Auxiliary routines for reading and converting between
-#   representations of knots and evaluation of basic knot
-#   properties.
+#   Auxiliary routines for reading and converting between       #
+#   representations of knots and evaluation of basic knot       #
+#   properties.                                                 #
 #                                                               #
 #   DEPENDENCIES: numpy                                         #
 #                                                               #
