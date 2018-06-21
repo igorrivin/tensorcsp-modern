@@ -8,8 +8,8 @@
 #                                                               #
 #   Auxiliary routines for evaluation of graph properties and   #
 #   graph operations based on the igraph library. Partitions    #
-#   are obtained using the METIS library, which is needed for   #
-#   the corresponding functions to work.
+#   are obtained using the METIS library, which needs to be     #
+#   installed for the corresponding functions to work.          #
 #                                                               #
 #   DEPENDENCIES: numpy, igraph, metis                          #
 #                                                               #
