@@ -16,10 +16,10 @@
 #################################################################
 
 import sys
-import pickle
 sys.dont_write_bytecode = True  # Do not write compiled bytecode
 from numpy import *
 from numpy.linalg import eigh
+from copy import deepcopy
 from igraph import *
 from metis import part_graph
 
@@ -90,7 +90,7 @@ def recursive_bipartition(g,fbipart=metis_bipartition):
     """ Build separator hierarchy using recursive bipartition.
         Returns a dendrogram merge sequence. """
     nv = g.vcount()
-    cg = pickle.loads(pickle.dumps(g))
+    cg = deepcopy(g)
     cg.vs["name"] = range(nv)
     sg = [cg]
     tr = []
@@ -170,7 +170,7 @@ def contract_greedy(g,n=0,fsize=Graph.maxdegree,combine_attrs=None):
     nv = g.vcount()
     bs = [fsize(g)]
     # NB: it is annoyingly hard to deep-copy igraph graphs!
-    cg = pickle.loads(pickle.dumps(g))
+    cg = deepcopy(g)
     if ( n == 0 ): n = 100000
     while ( cg.ecount() > 0 and n > 0 ):
         ie = find_cheapest_edge(cg)
@@ -189,7 +189,7 @@ def contract_dendrogram(g,merges,fsize=Graph.maxdegree,combine_attrs=None,stop=-
     ne = g.ecount()
     bs = [fsize(g)]
     # NB: it is annoyingly hard to deep-copy igraph graphs!
-    cg = pickle.loads(pickle.dumps(g))
+    cg = deepcopy(g)
     for i,m in enumerate(merges):
         ie = cg.get_eid(m[0],m[1])
         contract_edge(cg,ie,combine_attrs=combine_attrs,overwrite="none")
