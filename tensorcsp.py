@@ -113,7 +113,6 @@ def cnf_tn(c,q=2,gate=oror,dtype=int):
     _,tp = g.is_bipartite(True) # Get vertex types
     # NB: assume variables always come before clauses
     cv = arange(g.vcount())[nonzero(tp)[0]]
-    tn = [[]]*nv
     # Build tensor network; variable tensors first
     tn = [var_tensor(len(l),q,dtype=dtype) for l in al[:nv]]
     for n,i in enumerate(cv):
