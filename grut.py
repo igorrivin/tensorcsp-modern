@@ -165,7 +165,7 @@ def contract_edge(g,ie,combine_attrs=None,overwrite="higher"):
         ie = g.get_eid(ee[0],ee[1],error=False)
     g.contract_vertices(ar,combine_attrs=combine_attrs)
 
-def contract_greedy(g,n=0,fsize=Graph.maxdegree,combine_attrs=None):
+def contract_greedy(g,n=0,fedge=find_cheapest_edge,fsize=Graph.maxdegree,combine_attrs=None):
     """ Greedy contraction algorithm. """
     nv = g.vcount()
     bs = [fsize(g)]
@@ -173,7 +173,7 @@ def contract_greedy(g,n=0,fsize=Graph.maxdegree,combine_attrs=None):
     cg = deepcopy(g)
     if ( n == 0 ): n = 100000
     while ( cg.ecount() > 0 and n > 0 ):
-        ie = find_cheapest_edge(cg)
+        ie = fedge(cg)
         contract_edge(cg,ie,combine_attrs=combine_attrs)
         bs = bs + [fsize(cg)]
         n = n - 1
