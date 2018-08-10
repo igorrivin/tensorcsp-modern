@@ -28,7 +28,8 @@ def adjmat(g):
     return array(g.get_adjacency().data)
 
 def adjlist2adjmat(a):
-    """ Convert adjacency list to adjacency matrix. """
+    """ Convert zero-based and contiguously indexed adjacency
+        list to adjacency matrix. """
     n = array(sum(a+[[]])).max()+1
     m = zeros([n,n],int)
     for i,r in enumerate(a):
