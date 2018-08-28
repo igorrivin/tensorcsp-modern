@@ -28,8 +28,7 @@ def adjmat(g):
     return array(g.get_adjacency().data)
 
 def adjlist2adjmat(a):
-    """ Convert zero-based and contiguously indexed adjacency
-        list to adjacency matrix. """
+    """ Convert adjacency list to adjacency matrix. """
     n = array(sum(a+[[]])).max()+1
     m = zeros([n,n],int)
     for i,r in enumerate(a):
@@ -148,16 +147,28 @@ def find_cheapest_edge(g,subset=None):
     return ie
 
 def contract_edge(g,ie,combine_attrs=None,overwrite="higher"):
-    """ Perform edge contraction. """
+    """ Perform edge contraction with user-specified function
+        to combine vertex attributes. The contracted vertex
+        can either overwrite existing vertices or be added to
+        the graph. """
     el = g.get_edgelist()
     nv = g.vcount()
     ne = g.ecount()
     ee = el[ie]
     ar = arange(nv)
     if ( overwrite == "higher" ):
-        ar[ee[0]] = ee[1] # Contract into vertex with higher index
+        ar[ee[0]] = ee[1] # Overwrite vertex with higher index
     elif ( overwrite == "lower" ):
-        ar[ee[1]] = ee[0] # Contract into vertex with lower index
+        ar[ee[1]] = ee[0] # Overwrite vertex with lower index
+    # Overwrite vertex with specified index
+    elif ( issubdtype(type(overwrite),integer) ):
+        if ( overwrite == ee[0] ):
+            ar[ee[1]] = ee[0]
+        elif ( overwrite == ee[1] ):
+            ar[ee[0]] = ee[1]
+        else:
+            ar[ee[0]] = overwrite
+            ar[ee[1]] = overwrite
     elif ( (overwrite == "none") or (overwrite == None) ):
         ar[ee[0]] = nv    # Contract into new vertex
         ar[ee[1]] = nv
@@ -166,7 +177,7 @@ def contract_edge(g,ie,combine_attrs=None,overwrite="higher"):
         ie = g.get_eid(ee[0],ee[1],error=False)
     g.contract_vertices(ar,combine_attrs=combine_attrs)
 
-def contract_greedy(g,n=0,fedge=find_cheapest_edge,fsize=Graph.maxdegree,combine_attrs=None):
+def contract_greedy(g,n=0,fsize=Graph.maxdegree,combine_attrs=None):
     """ Greedy contraction algorithm. """
     nv = g.vcount()
     bs = [fsize(g)]
@@ -174,7 +185,7 @@ def contract_greedy(g,n=0,fedge=find_cheapest_edge,fsize=Graph.maxdegree,combine
     cg = deepcopy(g)
     if ( n == 0 ): n = 100000
     while ( cg.ecount() > 0 and n > 0 ):
-        ie = fedge(cg)
+        ie = find_cheapest_edge(cg)
         contract_edge(cg,ie,combine_attrs=combine_attrs)
         bs = bs + [fsize(cg)]
         n = n - 1
