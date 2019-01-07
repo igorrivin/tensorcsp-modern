@@ -7,7 +7,7 @@
 #   written by Stefanos Kourtis ( kourtis@bu.edu )              #
 #                                                               #
 #   Example script demonstrating the solution of instances of   #
-#   3-regular #2SAT (also known as #CUBIC-VERTEX-COVER) using   #
+#   positive 3-regular #2SAT (i.e. #CUBIC-VERTEX-COVER) using   #
 #   graph partitioning and tensor network contraction. Random   #
 #   instances are generated as random 3-regular graphs, where   #
 #   vertices correspond to variables and edges to clauses.      #
@@ -24,7 +24,7 @@ from tensorcsp import *         # Import tensorCSP functions
 # Generate random 3-regular graph with nv vertices. Equivalently
 # these can be thought of as 2SAT instances with nv variables and
 # each edge represents a clause. Write the corresponding CNF to
-# a DIMACS file for purposes of comparison with other solvers.
+# a DIMACS file for purposes of comparison with model counters.
 #
 # NB: Counts for nv>100 start to overflow default numpy int. Pass
 #     dtype=float to cnf_tngraph for floating-point precision.
