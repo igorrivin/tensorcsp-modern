@@ -68,7 +68,7 @@ knots=dict( [
 # and compare with analytical result.
 ##########################################################################
 
-knot='3_1'
+knot='5_2'
 
 X=knots[knot][0]
 jones=knots[knot][1]
@@ -89,7 +89,7 @@ w=writhe(X) # writhe from X
 # in knut.py.
 
 DH_greedy=DeltaH_greedy(c)
-print 'Maximal degree during contraction is '+str(DH_greedy)+'.'
+print('Maximal degree during contraction is '+str(DH_greedy)+'.')
 
 # Function Jones_greedy contracts the tensor
 # network for the chosen q
@@ -104,10 +104,10 @@ q=5
 
 jpoly,rt=Jones_greedy(c,tau,w,q)
 
-print ('Jones polynomial is V(t(q='+str(q)+'))='+str(jpoly)
+print('Jones polynomial is V(t(q='+str(q)+'))='+str(jpoly)
 +' and was computed in '+str(rt)+' seconds.')
 # tpotts from satqtensorjones.py is the t(q) function
 # relating Potts parameter q to Jones variable t
-print ('The analytical result is V(t(q='+str(q)+'))='
+print('The analytical result is V(t(q='+str(q)+'))='
 +str(jones(tpotts(q)))+'.')
 
