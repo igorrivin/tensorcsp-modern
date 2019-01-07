@@ -99,7 +99,7 @@ def cnf_graph(c):
     for i,r in enumerate(c): a[i][abs(r)-1] = 1
     b[nv:,:nv] = a
     b = b+b.T
-    g = Graph.Adjacency(list(b),mode=ADJ_UNDIRECTED)
+    g = Graph.Adjacency(b.astype(bool).tolist(),mode=ADJ_UNDIRECTED)
     return g
 
 def cnf_tn(c,q=2,gate=oror,dtype=int):
