@@ -39,10 +39,10 @@ start = default_timer()
 md,sg = contract_greedy(tg,combine_attrs=dict(attr=attr_contract))
 end   = default_timer()
 sol   = sg.vs[0]["attr"][1]
-print 'Solved with greedy contraction in ',end-start,' seconds'
-print '  #Solutions:',sol
-print '  Max degree:',md.max()
-print
+print('Solved with greedy contraction in ',end-start,' seconds')
+print('  #Solutions:',sol)
+print('  Max degree:',md.max())
+print()
 
 # Then solve using METIS graph partitioning:
 start = default_timer()
@@ -50,10 +50,10 @@ m = recursive_bipartition(tg,metis_bipartition)
 md,sg = contract_dendrogram(tg,m,combine_attrs=dict(attr=attr_contract))
 end   = default_timer()
 sol   = sg.vs[0]["attr"][1]
-print 'Solved with METIS partitioning in ',end-start,' seconds'
-print '  #Solutions:',sol
-print '  Max degree:',md.max()
-print
+print('Solved with METIS partitioning in ',end-start,' seconds')
+print('  #Solutions:',sol)
+print('  Max degree:',md.max())
+print()
 
 # Finally solve using Girvan-Newman community detection:
 start = default_timer()
@@ -62,8 +62,8 @@ m = d.merges
 md,sg = contract_dendrogram(tg,m,combine_attrs=dict(attr=attr_contract))
 end   = default_timer()
 sol   = sg.vs[0]["attr"][1]
-print 'Solved with Girvan-Newman in ',end-start,' seconds'
-print '  #Solutions:',sol
-print '  Max degree:',md.max()
-print
+print('Solved with Girvan-Newman in ',end-start,' seconds')
+print('  #Solutions:',sol)
+print('  Max degree:',md.max())
+print()
 
