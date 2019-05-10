@@ -81,11 +81,11 @@ def cnf_write(c,filename,xs=None):
 
 def cnf_negmask(c):
     """ Negation mask of CNF formula c. """
-    return [int(''.join(s),2) for s in [array(array(a<0,int),str) for a in c]]
+    return [int(''.join(s),2) for s in [array(array(array(a)<0,int),str) for a in c]]
 
 def cnf_nvar(c):
     """ Number of variables in CNF formula c. """
-    return array([abs(a).max() for a in c]).max()
+    return array([abs(array(list(a))).max() for a in c]).max()
 
 def cnf_graph(c):
     """ Returns bipartite graph object corresponding to
@@ -96,7 +96,7 @@ def cnf_graph(c):
     nv = cnf_nvar(c)
     a  = zeros([nc,nv],int)
     b  = zeros([nc+nv,nc+nv],int) # Biadjacency matrix
-    for i,r in enumerate(c): a[i][abs(r)-1] = 1
+    for i,r in enumerate(c): a[i][abs(array(r))-1] = 1
     b[nv:,:nv] = a
     b = b+b.T
     g = Graph.Adjacency(b.astype(bool).tolist(),mode=ADJ_UNDIRECTED)
