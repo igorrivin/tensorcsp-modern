@@ -21,7 +21,10 @@ from numpy import *
 from numpy.linalg import eigh
 from copy import deepcopy
 from igraph import *
-from metis import part_graph
+try:
+    from metis import part_graph
+except ImportError:
+    pass
 
 def adjmat(g):
     """ Adjacency matrix of graph object g as ndarray. """
@@ -212,4 +215,3 @@ def contract_dendrogram(g,merges,fsize=Graph.maxdegree,combine_attrs=None,stop=-
     if ( len(vd) == cg.vcount() ): vd = vd[:-1]
     cg.delete_vertices(vd)
     return bs,cg
-
