@@ -27,7 +27,7 @@ The methods are described in:
 
 ```bash
 # Clone the repository
-git clone https://github.com/OWNER/tensorcsp-modern.git
+git clone https://github.com/igorrivin/tensorcsp-modern.git
 cd tensorcsp-modern
 
 # Install dependencies

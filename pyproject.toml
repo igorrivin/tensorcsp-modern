@@ -45,9 +45,9 @@ all = ["opt_einsum>=3.3.0", "pymetis>=2020.1"]
 legacy = ["python-igraph>=0.9.0"]
 
 [project.urls]
-Homepage = "https://github.com/OWNER/tensorcsp-modern"
-Documentation = "https://github.com/OWNER/tensorcsp-modern#readme"
-Repository = "https://github.com/OWNER/tensorcsp-modern"
+Homepage = "https://github.com/igorrivin/tensorcsp-modern"
+Documentation = "https://github.com/igorrivin/tensorcsp-modern#readme"
+Repository = "https://github.com/igorrivin/tensorcsp-modern"
 "Original Paper" = "https://arxiv.org/abs/1805.00475"
 
 [tool.setuptools.packages.find]
