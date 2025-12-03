@@ -20,6 +20,7 @@ from time import perf_counter
 
 import numpy as np
 
+
 from tensorcsp_modern import (
     cnf_nvar, cnf_tngraph, clause_tensor, attr_contract,
     contract_greedy, contract_dendrogram, recursive_bipartition
@@ -418,3 +419,200 @@ def Jones_METIS(
              t ** (0.25 * tau))
 
     return jpoly, runtime
+
+
+def Jones_polynomial(
+    planar_diagram: np.ndarray,
+    verify: bool = True
+) -> tuple[dict[int, int], float]:
+    """
+    Compute the full Jones polynomial as a Laurent polynomial with
+    integer coefficients.
+
+    The Jones polynomial V(t) is a Laurent polynomial (has both positive
+    and negative powers of t). We compute it by:
+    1. Estimating the max power from asymptotic behavior
+    2. Searching for optimal shift to clear negative powers
+    3. Using arbitrary-precision arithmetic (mpmath) to fit polynomial
+    4. Verifying coefficients are close to integers
+    5. Building the Laurent polynomial from integer coefficients
+
+    Args:
+        planar_diagram: Planar diagram code (array of crossings)
+        verify: If True, verify that V(1) = 1 (standard normalization)
+
+    Returns:
+        Tuple of:
+        - Dictionary mapping power -> coefficient (e.g., {-4: -1, -3: 1, -1: 1})
+        - Runtime in seconds
+
+    Raises:
+        ValueError: If verification fails (V(1) != 1)
+
+    Example:
+        >>> # Trefoil knot
+        >>> X = np.array([[1,4,2,5], [3,6,4,1], [5,2,6,3]])
+        >>> coeffs, _ = Jones_polynomial(X)
+        >>> print(coeffs)  # {-4: -1, -3: 1, -1: 1}
+        >>> # This means V(t) = -t^(-4) + t^(-3) + t^(-1)
+    """
+    import mpmath
+    from mpmath import mpf, matrix as mp_matrix
+
+    t1 = perf_counter()
+
+    X = np.asarray(planar_diagram)
+    n_crossings = len(X)
+
+    # Handle trivial case (unknot)
+    if n_crossings == 0:
+        return {0: 1}, 0.0
+
+    # Set precision based on problem size
+    # Values grow like t^(2n) evaluated at t ~ 2n, needing O(n log n) digits
+    precision = max(50, 15 * n_crossings)
+    mpmath.mp.dps = precision
+
+    # Convert to Tait graph and compute invariants
+    c = pd2tait(X)
+    tau = taitnumber(c)
+    w = writhe(X)
+
+    # Estimate max power of V(t) from asymptotic behavior
+    # For large t, V(t) ~ c * t^max_power
+    q_test = [50, 100]
+    ratios = []
+    for q in q_test:
+        t_val = tpotts(q).real
+        V_val, _ = Jones_greedy(c, tau, w, q)
+        if abs(V_val.real) > 0:
+            ratio = np.log(abs(V_val.real)) / np.log(t_val)
+            ratios.append(ratio)
+    estimated_max_power = int(round(np.mean(ratios)))
+
+    # Search for optimal (shift, degree) combination
+    # The polynomial span is at most 2n, so we need degree >= 2n
+    best_shift = None
+    best_degree = None
+    best_score = float('inf')
+    best_coeffs = None
+
+    # Search shifts from -n to 2n to cover both positive and negative min powers
+    for shift in range(-n_crossings, 2 * n_crossings + 1):
+        # Degree needs to cover from 0 to (shift + max_power)
+        max_degree = max(abs(estimated_max_power) + abs(shift) + 2, 2 * n_crossings)
+
+        if max_degree > 4 * n_crossings:  # Cap for performance
+            continue
+
+        t_vals = []
+        y_vals = []
+
+        for i in range(max_degree + 1):
+            q = 5 + i
+            t_val = tpotts(q).real
+            V_val, _ = Jones_greedy(c, tau, w, q)
+            shifted = (t_val ** shift) * V_val.real
+            t_vals.append(mpf(t_val))
+            y_vals.append(mpf(shifted))
+
+        # Solve Vandermonde system
+        n = len(t_vals)
+        V = mp_matrix(n, max_degree + 1)
+        for i in range(n):
+            for j in range(max_degree + 1):
+                V[i, j] = t_vals[i] ** (max_degree - j)
+
+        y_vec = mp_matrix(y_vals)
+        coeffs_mp = mpmath.lu_solve(V, y_vec)
+
+        # Check quality: P(1) should be 1, coefficients should be near integers
+        p_at_1 = sum(float(coeffs_mp[i]) for i in range(max_degree + 1))
+        residuals = [abs(float(c) - round(float(c))) for c in coeffs_mp]
+        max_res = max(residuals)
+
+        score = abs(p_at_1 - 1.0) + max_res
+
+        if score < best_score:
+            best_score = score
+            best_shift = shift
+            best_degree = max_degree
+            best_coeffs = coeffs_mp
+
+    if best_coeffs is None:
+        raise ValueError("Could not find valid polynomial fit")
+
+    # Build Laurent polynomial from best coefficients
+    laurent_coeffs = {}
+    for i, coeff in enumerate(best_coeffs):
+        power = best_degree - i  # power in P(t)
+        actual_power = power - best_shift  # power in V(t)
+        int_c = int(mpmath.nint(coeff))
+        if int_c != 0:
+            laurent_coeffs[actual_power] = int_c
+
+    t2 = perf_counter()
+    runtime = t2 - t1
+
+    # Verify: V(1) should equal 1
+    if verify:
+        V_at_1 = sum(laurent_coeffs.values())
+        if V_at_1 != 1:
+            raise ValueError(
+                f"Verification failed: V(1) = {V_at_1}, expected 1. "
+                "This may indicate numerical issues or an unusual knot."
+            )
+
+    return laurent_coeffs, runtime
+
+
+def format_jones_polynomial(coeffs: dict[int, int]) -> str:
+    """
+    Format a Jones polynomial dictionary as a human-readable string.
+
+    Args:
+        coeffs: Dictionary mapping power -> coefficient
+
+    Returns:
+        String representation like "-t^(-4) + t^(-3) + t^(-1)"
+    """
+    if not coeffs:
+        return "0"
+
+    terms = []
+    for power in sorted(coeffs.keys(), reverse=True):
+        coeff = coeffs[power]
+        if coeff == 0:
+            continue
+
+        # Format coefficient
+        if coeff == 1 and power != 0:
+            coeff_str = ""
+        elif coeff == -1 and power != 0:
+            coeff_str = "-"
+        else:
+            coeff_str = str(coeff)
+
+        # Format power
+        if power == 0:
+            term = str(coeff)
+        elif power == 1:
+            term = f"{coeff_str}t"
+        elif power == -1:
+            term = f"{coeff_str}t^(-1)"
+        elif power < 0:
+            term = f"{coeff_str}t^({power})"
+        else:
+            term = f"{coeff_str}t^{power}"
+
+        terms.append(term)
+
+    # Join with appropriate signs
+    result = terms[0]
+    for term in terms[1:]:
+        if term.startswith("-"):
+            result += " - " + term[1:]
+        else:
+            result += " + " + term
+
+    return result

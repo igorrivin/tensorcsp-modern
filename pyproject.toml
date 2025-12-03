@@ -41,7 +41,8 @@ dependencies = [
 [project.optional-dependencies]
 optimized = ["opt_einsum>=3.3.0"]
 metis = ["pymetis>=2020.1"]
-all = ["opt_einsum>=3.3.0", "pymetis>=2020.1"]
+polynomial = ["mpmath>=1.2.0"]
+all = ["opt_einsum>=3.3.0", "pymetis>=2020.1", "mpmath>=1.2.0"]
 legacy = ["python-igraph>=0.9.0"]
 
 [project.urls]

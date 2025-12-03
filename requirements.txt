@@ -5,5 +5,8 @@ networkx>=2.6.0
 # Optional: Optimized tensor contractions
 opt_einsum>=3.3.0
 
-# Optional: METIS graph partitioning (choose one)
+# Optional: Full Jones polynomial computation (requires arbitrary precision)
+mpmath>=1.2.0
+
+# Optional: METIS graph partitioning
 # pymetis>=2020.1
