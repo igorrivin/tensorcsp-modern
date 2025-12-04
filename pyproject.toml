@@ -44,6 +44,12 @@ metis = ["pymetis>=2020.1"]
 polynomial = ["mpmath>=1.2.0"]
 all = ["opt_einsum>=3.3.0", "pymetis>=2020.1", "mpmath>=1.2.0"]
 legacy = ["python-igraph>=0.9.0"]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "black",
+    "ruff",
+]
 
 [project.urls]
 Homepage = "https://github.com/igorrivin/tensorcsp-modern"
@@ -54,3 +60,12 @@ Repository = "https://github.com/igorrivin/tensorcsp-modern"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["tensorcsp*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501"]  # line too long - handled by black
