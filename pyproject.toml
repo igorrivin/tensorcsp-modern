@@ -57,6 +57,9 @@ Documentation = "https://github.com/igorrivin/tensorcsp-modern#readme"
 Repository = "https://github.com/igorrivin/tensorcsp-modern"
 "Original Paper" = "https://arxiv.org/abs/1805.00475"
 
+[tool.setuptools]
+py-modules = ["tensorcsp_modern", "grut_modern", "knut_modern"]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["tensorcsp*"]
